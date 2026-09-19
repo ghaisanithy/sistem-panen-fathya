@@ -4,7 +4,7 @@
   "metadata": {
     "colab": {
       "provenance": [],
-      "authorship_tag": "ABX9TyMhXWuewwxhN+IbKmMkYz6I",
+      "authorship_tag": "ABX9TyNX1GbVyy2s7ibRB5bQbSov",
       "include_colab_link": true
     },
     "kernelspec": {
@@ -23,105 +23,91 @@
         "colab_type": "text"
       },
       "source": [
-        "<a href=\"https://colab.research.google.com/github/ghaisanithy/sistem-panen-fathya/blob/conflict-ghea/kalkulasi_harga.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+        "<a href=\"https://colab.research.google.com/github/ghaisanithy/sistem-panen-fathya/blob/conflict-olivia/kalkulasi_harga.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
       ]
     },
     {
       "cell_type": "code",
       "source": [
-        "# input_panen.py\n",
-        "# Dikerjakan oleh: Anggota A (Branch: fitur-input)\n",
-        "\n",
-        "def input_data_panen():\n",
+        "def tampilkan_laporan(daftar_panen):\n",
         "    \"\"\"\n",
-        "    Fungsi untuk memasukkan data hasil panen dengan validasi sederhana.\n",
-        "    Mengembalikan list of dictionary data panen.\n",
+        "    Fungsi untuk mengolah statistik dan menampilkan rekapitulasi data panen.\n",
+        "    Menerima input berupa list of dictionary dari modul input_panen.\n",
         "    \"\"\"\n",
-        "    daftar_panen = []\n",
-        "    print(\"=== PENCATATAN DATA PANEN ===\")\n",
+        "    if not daftar_panen:\n",
+        "        print(\"\\n[PERINGATAN] Tidak ada data panen yang bisa dilaporkan.\")\n",
+        "        return\n",
         "\n",
-        "    while True:\n",
-        "        try:\n",
-        "            jumlah = int(input(\"Masukkan jumlah jenis komoditas yang ingin dicatat: \"))\n",
-        "            if jumlah > 0:\n",
-        "                break\n",
-        "            print(\"Jumlah harus lebih besar dari 0.\")\n",
-        "        except ValueError:\n",
-        "            print(\"Input tidak valid! Masukkan angka bulat.\")\n",
+        "    # 1. Perhitungan Statistik\n",
+        "    total_berat = sum(item[\"berat_kg\"] for item in daftar_panen)\n",
+        "    rata_rata = total_berat / len(daftar_panen)\n",
+        "    komoditas_terbanyak = max(daftar_panen, key=lambda x: x[\"berat_kg\"])\n",
         "\n",
-        "    for i in range(jumlah):\n",
-        "        print(f\"\\nData Komoditas ke-{i + 1}:\")\n",
+        "    # Menghitung jumlah per kualitas\n",
+        "    jumlah_kualitas_a = sum(1 for item in daftar_panen if item[\"kualitas\"] == \"A\")\n",
+        "    jumlah_kualitas_b = sum(1 for item in daftar_panen if item[\"kualitas\"] == \"B\")\n",
+        "    jumlah_kualitas_c = sum(1 for item in daftar_panen if item[\"kualitas\"] == \"C\")\n",
         "\n",
-        "        while True:\n",
-        "            nama = input(\"  Nama Komoditas (misal: Jagung, Padi): \").strip()\n",
-        "            if nama:\n",
-        "                break\n",
-        "            print(\"  Nama komoditas tidak boleh kosong!\")\n",
+        "    # 2. Format Tabel Laporan\n",
+        "    print(\"\\n\" + \"=\" * 54)\n",
+        "    print(f\"{'REKAPITULASI HASIL PANEN':^54}\")\n",
+        "    print(\"=\" * 54)\n",
+        "    print(f\"{'No':<4} | {'Komoditas':<18} | {'Berat (kg)':<12} | {'Kualitas':<8}\")\n",
+        "    print(\"-\" * 54)\n",
         "\n",
-        "        while True:\n",
-        "            try:\n",
-        "                berat = float(input(\"  Berat Hasil Panen (kg): \"))\n",
-        "                if berat > 0:\n",
-        "                    break\n",
-        "                print(\"  Berat harus lebih dari 0 kg.\")\n",
-        "            except ValueError:\n",
-        "                print(\"  Input harus berupa angka desimal/bulat!\")\n",
+        "    for idx, item in enumerate(daftar_panen, start=1):\n",
+        "        print(f\"{idx:<4} | {item['komoditas']:<18} | {item['berat_kg']:<12.1f} | {item['kualitas']:<8}\")\n",
         "\n",
-        "        while True:\n",
-        "            try:\n",
-        "                kualitas = input(\"  Kualitas Panen (A/B/C): \").strip().upper()\n",
-        "                if kualitas in ['A', 'B', 'C']:\n",
-        "                    break\n",
-        "                print(\"  Pilihan kualitas hanya A, B, atau C!\")\n",
-        "            except Exception:\n",
-        "                print(\"  Input kualitas tidak valid.\")\n",
+        "    print(\"-\" * 54)\n",
+        "    print(\"RINGKASAN STATISTIK:\")\n",
+        "    print(f\" • Total Berat Panen    : {total_berat:.1f} kg\")\n",
+        "    print(f\" • Rata-rata per Jenis  : {rata_rata:.1f} kg\")\n",
+        "    print(f\" • Komoditas Tertinggi  : {komoditas_terbanyak['komoditas']} ({komoditas_terbanyak['berat_kg']:.1f} kg)\")\n",
+        "    print(f\" • Distribusi Kualitas  : A={jumlah_kualitas_a}, B={jumlah_kualitas_b}, C={jumlah_kualitas_c}\")\n",
+        "    print(\"=\" * 54 + \"\\n\")\n",
         "\n",
-        "        # Simpan dalam struktur data dictionary\n",
-        "        daftar_panen.append({\n",
-        "            \"komoditas\": nama,\n",
-        "            \"berat_kg\": berat,\n",
-        "            \"kualitas\": kualitas\n",
-        "        })\n",
         "\n",
-        "    print(\"\\n[INFO] Data panen berhasil dicatat!\\n\")\n",
-        "    return daftar_panen\n",
-        "\n",
-        "# TAMBAHKAN BAGIAN INI UNTUK TESTING DI COLAB:\n",
+        "# BAGIAN INI UNTUK TESTING MANDIRI DI GOOGLE COLAB OLEH ANGGOTA B:\n",
         "if __name__ == \"__main__\":\n",
-        "    hasil_input = input_data_panen()\n",
-        "    print(\"Data yang tersimpan di memori:\")\n",
-        "    print(hasil_input)"
+        "    # Menggunakan sampel data yang sama persis seperti hasil running Anggota A\n",
+        "    data_testing_dari_a = [\n",
+        "        {'komoditas': 'Kentang', 'berat_kg': 100.0, 'kualitas': 'A'},\n",
+        "        {'komoditas': 'Sorgum', 'berat_kg': 80.0, 'kualitas': 'A'}\n",
+        "    ]\n",
+        "\n",
+        "    print(\"Menjalankan modul laporan dengan data uji coba...\")\n",
+        "    tampilkan_laporan(data_testing_dari_a)"
       ],
       "metadata": {
+        "id": "QY70_Db4agCF",
+        "outputId": "4d9e0033-f2ff-4bcf-b438-641a0eb56077",
         "colab": {
           "base_uri": "https://localhost:8080/"
-        },
-        "id": "0SsXXm4cYuVC",
-        "outputId": "baaceb67-edc1-41d5-9651-ae17609c9c51"
+        }
       },
-      "execution_count": 8,
+      "execution_count": null,
       "outputs": [
         {
           "output_type": "stream",
           "name": "stdout",
           "text": [
-            "=== PENCATATAN DATA PANEN ===\n",
-            "Masukkan jumlah jenis komoditas yang ingin dicatat: 2\n",
+            "Menjalankan modul laporan dengan data uji coba...\n",
             "\n",
-            "Data Komoditas ke-1:\n",
-            "  Nama Komoditas (misal: Jagung, Padi): Kentang\n",
-            "  Berat Hasil Panen (kg): 100\n",
-            "  Kualitas Panen (A/B/C): A\n",
-            "\n",
-            "Data Komoditas ke-2:\n",
-            "  Nama Komoditas (misal: Jagung, Padi): Sorgum\n",
-            "  Berat Hasil Panen (kg): 80\n",
-            "  Kualitas Panen (A/B/C): A\n",
-            "\n",
-            "[INFO] Data panen berhasil dicatat!\n",
-            "\n",
-            "Data yang tersimpan di memori:\n",
-            "[{'komoditas': 'Kentang', 'berat_kg': 100.0, 'kualitas': 'A'}, {'komoditas': 'Sorgum', 'berat_kg': 80.0, 'kualitas': 'A'}]\n"
+            "======================================================\n",
+            "               REKAPITULASI HASIL PANEN               \n",
+            "======================================================\n",
+            "No   | Komoditas          | Berat (kg)   | Kualitas\n",
+            "------------------------------------------------------\n",
+            "1    | Kentang            | 100.0        | A       \n",
+            "2    | Sorgum             | 80.0         | A       \n",
+            "------------------------------------------------------\n",
+            "RINGKASAN STATISTIK:\n",
+            " • Total Berat Panen    : 180.0 kg\n",
+            " • Rata-rata per Jenis  : 90.0 kg\n",
+            " • Komoditas Tertinggi  : Kentang (100.0 kg)\n",
+            " • Distribusi Kualitas  : A=2, B=0, C=0\n",
+            "======================================================\n",
+            "\n"
           ]
         }
       ]
@@ -132,24 +118,24 @@
         "# kalkulasi_harga.py\n",
         "\n",
         "def hitung_total_pendapatan(berat_kg, komoditas):\n",
-        "    # Penentuan harga satuan per kg oleh Anggota A\n",
+        "    # Penentuan harga satuan per kg oleh Anggota B\n",
         "    daftar_harga = {\n",
-        "        \"Kentang\": 12000,\n",
-        "        \"Sorgum\": 9000\n",
+        "        \"Kentang\": 15000,\n",
+        "        \"Sorgum\": 11500\n",
         "    }\n",
         "\n",
         "    harga_satuan = daftar_harga.get(komoditas, 0)\n",
         "    total = berat_kg * harga_satuan\n",
         "    return total\n",
         "\n",
-        "print(\"Modul hitung pendapatan aktif (Versi Pasar Lokal)\")"
+        "print(\"Modul hitung pendapatan aktif (Versi Pasar Ekspor)\")"
       ],
       "metadata": {
         "colab": {
           "base_uri": "https://localhost:8080/"
         },
-        "id": "_PlY6rEBXclN",
-        "outputId": "d204e7c7-79f0-42e8-de0a-03493dfe28f5"
+        "id": "lfVRawOKXo-p",
+        "outputId": "1d1d7c60-4e21-4f65-f107-b1d315364238"
       },
       "execution_count": 1,
       "outputs": [
@@ -157,7 +143,7 @@
           "output_type": "stream",
           "name": "stdout",
           "text": [
-            "Modul hitung pendapatan aktif (Versi Pasar Lokal)\n"
+            "Modul hitung pendapatan aktif (Versi Pasar Ekspor)\n"
           ]
         }
       ]
